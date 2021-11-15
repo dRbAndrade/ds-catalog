@@ -5,12 +5,10 @@ import br.com.drbandrade.dscatalog.entities.Category;
 import br.com.drbandrade.dscatalog.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -38,7 +36,11 @@ public class CategoryController {
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(category.getId()).toUri();
         return ResponseEntity.created(uri).body(category);
+    }
 
+    @PutMapping("/{id}")
+    public ResponseEntity edit(@PathVariable long id, @RequestBody CategoryDTO dto){
+        return ResponseEntity.ok().body(service.edit(id,dto));
     }
 
 }
