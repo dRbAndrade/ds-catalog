@@ -4,6 +4,7 @@ import br.com.drbandrade.dscatalog.dto.CategoryDTO;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Objects;
 
 @Entity
@@ -14,7 +15,10 @@ public class Category implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
-
+    @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE", name = "created_at")
+    private Instant createdAt;
+    @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE", name = "updated_at")
+    private Instant updatedAt;
     public Category(){}
 
     public Category(CategoryDTO dto){
@@ -42,6 +46,14 @@ public class Category implements Serializable {
         this.name = name;
     }
 
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -49,9 +61,18 @@ public class Category implements Serializable {
         Category category = (Category) o;
         return id == category.id && Objects.equals(name, category.name);
     }
-
     @Override
     public int hashCode() {
         return Objects.hash(id, name);
+    }
+
+    @PrePersist
+    public void prePersist(){
+        createdAt = Instant.now();
+    }
+
+    @PreUpdate
+    public void preUpdate(){
+        updatedAt = Instant.now();
     }
 }

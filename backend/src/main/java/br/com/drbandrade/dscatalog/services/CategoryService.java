@@ -3,8 +3,11 @@ package br.com.drbandrade.dscatalog.services;
 import br.com.drbandrade.dscatalog.dto.CategoryDTO;
 import br.com.drbandrade.dscatalog.entities.Category;
 import br.com.drbandrade.dscatalog.repositories.CategoryRepository;
+import br.com.drbandrade.dscatalog.services.exceptions.DatabaseIntegrityException;
 import br.com.drbandrade.dscatalog.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,5 +51,16 @@ public class CategoryService {
         }catch (EntityNotFoundException ex){
             throw new ResourceNotFoundException("Recurso com o id "+id+" não foi encontrado");
         }
+    }
+
+    public void delete(long id) {
+        try {
+            repository.deleteById(id);
+        }catch (EmptyResultDataAccessException ex){
+            throw new ResourceNotFoundException("Categoria não encontrada");
+        }catch(DataIntegrityViolationException ex){
+            throw new DatabaseIntegrityException("Violação de integridade: Há tabelas que dependem de Categoria");
+        }
+
     }
 }

@@ -1,1 +1,1 @@
-INSERT INTO category (name) values ('Books'),('Electronics'),('Computers');
+INSERT INTO category (name, created_at) values ('Books',NOW()),('Electronics',NOW()),('Computers',NOW());
