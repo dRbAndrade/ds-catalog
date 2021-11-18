@@ -1,7 +1,9 @@
 package br.com.drbandrade.dscatalog.services;
 
 import br.com.drbandrade.dscatalog.dto.ProductDTO;
+import br.com.drbandrade.dscatalog.entities.Category;
 import br.com.drbandrade.dscatalog.entities.Product;
+import br.com.drbandrade.dscatalog.repositories.CategoryRepository;
 import br.com.drbandrade.dscatalog.repositories.ProductRepository;
 import br.com.drbandrade.dscatalog.services.exceptions.DatabaseIntegrityException;
 import br.com.drbandrade.dscatalog.services.exceptions.ResourceNotFoundException;
@@ -21,6 +23,8 @@ public class ProductService {
 
     @Autowired
     private ProductRepository repository;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Transactional(readOnly = true)
     public Page<ProductDTO> findAllPaged(PageRequest pageRequest){
@@ -37,19 +41,19 @@ public class ProductService {
 
     @Transactional
     public ProductDTO insert(ProductDTO dto) {
-        Product product = new Product();
-        product.setName(dto.getName());
-        product = repository.save(product);
-        return new ProductDTO(product);
+        Product entity = new Product();
+        buildEntityFromDTO(entity,dto);
+        entity = repository.save(entity);
+        return new ProductDTO(entity,entity.getCategories());
     }
 
     @Transactional
     public ProductDTO edit(long id, ProductDTO dto) {
         try {
-            Product product = repository.getById(id);
-            product.setName(dto.getName());
-            repository.save(product);
-            return new ProductDTO(product);
+            Product entity = repository.getById(id);
+            buildEntityFromDTO(entity,dto);
+            repository.save(entity);
+            return new ProductDTO(entity,entity.getCategories());
         }catch (EntityNotFoundException ex){
             throw new ResourceNotFoundException("Recurso com o id "+id+" não foi encontrado");
         }
@@ -64,6 +68,21 @@ public class ProductService {
             throw new DatabaseIntegrityException("Violação de integridade: Há tabelas que dependem de Produto");
         }
 
+    }
+
+    private void buildEntityFromDTO(Product entity, ProductDTO dto) {
+
+        entity.setName(dto.getName());
+        entity.setDescription(dto.getDescription());
+        entity.setPrice(dto.getPrice());
+        entity.setImgUrl(dto.getImgUrl());
+        entity.setDate(dto.getDate());
+        entity.getCategories().clear();
+        dto.getCategories().forEach(e->{
+                Category category = categoryRepository.getById(e.getId());
+                entity.getCategories().add(category);
+            }
+        );
     }
 
 }

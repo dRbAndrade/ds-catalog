@@ -43,7 +43,7 @@ public class ProductController {
     public ResponseEntity<ProductDTO> insert(@RequestBody ProductDTO product){
         product = service.insert(product);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(product.getId()).toUri();
+                    .buildAndExpand(product.getId()).toUri();
         return ResponseEntity.created(uri).body(product);
     }
 
