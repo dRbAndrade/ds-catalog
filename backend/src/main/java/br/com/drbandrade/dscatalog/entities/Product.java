@@ -17,7 +17,7 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String name;
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -56,5 +56,9 @@ public class Product {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public static Product generateProduct(){
+        return new Product(1L,"PC Gamer", "Cheap PC.", 1200.00, "https://img.com/img.png", Instant.parse("2020-10-20T03:00:00Z"));
     }
 }
